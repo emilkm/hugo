@@ -18,7 +18,7 @@ import (
 	"html"
 
 	"github.com/miekg/mmark"
-	"github.com/russross/blackfriday"
+	"github.com/emilkm/blackfriday"
 	"github.com/spf13/hugo/config"
 	jww "github.com/spf13/jwalterweatherman"
 )

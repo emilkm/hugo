@@ -20,7 +20,7 @@ import (
 	"testing"
 
 	"github.com/miekg/mmark"
-	"github.com/russross/blackfriday"
+	"github.com/emilkm/blackfriday"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -176,6 +176,7 @@ func TestGetHTMLRendererAllFlags(t *testing.T) {
 		{blackfriday.HTML_HREF_TARGET_BLANK},
 		{blackfriday.HTML_SMARTYPANTS_DASHES},
 		{blackfriday.HTML_SMARTYPANTS_LATEX_DASHES},
+		{blackfriday.HTML_HEADER_ID_LINKS},
 	}
 	defaultFlags := blackfriday.HTML_USE_XHTML
 	ctx := &RenderingContext{Cfg: c.cfg, Config: c.NewBlackfriday()}
@@ -187,6 +188,8 @@ func TestGetHTMLRendererAllFlags(t *testing.T) {
 	ctx.Config.SmartDashes = true
 	ctx.Config.Smartypants = true
 	ctx.Config.SourceRelativeLinksEval = true
+	ctx.Config.HeaderIDLinksLevel = 3
+    	ctx.Config.HeaderIDLinksBeforeText = true
 	renderer := c.getHTMLRenderer(defaultFlags, ctx)
 	actualFlags := renderer.GetFlags()
 	var expectedFlags int
@@ -284,6 +287,7 @@ func TestGetMarkdownExtensionsByDefaultAllExtensionsAreEnabled(t *testing.T) {
 		{blackfriday.EXTENSION_AUTO_HEADER_IDS},
 		{blackfriday.EXTENSION_BACKSLASH_LINE_BREAK},
 		{blackfriday.EXTENSION_DEFINITION_LISTS},
+        	{blackfriday.EXTENSION_INLINE_CODE_LANG},
 	}
 
 	actualFlags := getMarkdownExtensions(ctx)

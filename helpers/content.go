@@ -28,7 +28,7 @@ import (
 	"github.com/chaseadamsio/goorgeous"
 	"github.com/miekg/mmark"
 	"github.com/mitchellh/mapstructure"
-	"github.com/russross/blackfriday"
+	"github.com/emilkm/blackfriday"
 	bp "github.com/spf13/hugo/bufferpool"
 	"github.com/spf13/hugo/config"
 	jww "github.com/spf13/jwalterweatherman"
@@ -74,6 +74,8 @@ type Blackfriday struct {
 	SourceRelativeLinksProjectFolder string
 	Extensions                       []string
 	ExtensionsMask                   []string
+	HeaderIDLinksLevel               int
+    	HeaderIDLinksBeforeText          bool
 }
 
 // NewBlackfriday creates a new Blackfriday filled with site config or some sane defaults.
@@ -89,6 +91,8 @@ func (c ContentSpec) NewBlackfriday() *Blackfriday {
 		"taskLists":                        true,
 		"sourceRelativeLinks":              false,
 		"sourceRelativeLinksProjectFolder": "/docs/content",
+		"HeaderIDLinksLevel":               0,
+		"HeaderIDLinksBeforeText":          false,
 	}
 
 	ToLowerMap(defaultParam)
@@ -137,6 +141,7 @@ var blackfridayExtensionMap = map[string]int{
 	"autoHeaderIds":          blackfriday.EXTENSION_AUTO_HEADER_IDS,
 	"backslashLineBreak":     blackfriday.EXTENSION_BACKSLASH_LINE_BREAK,
 	"definitionLists":        blackfriday.EXTENSION_DEFINITION_LISTS,
+	"inlineCodeLang":         blackfriday.EXTENSION_INLINE_CODE_LANG,
 }
 
 var stripHTMLReplacer = strings.NewReplacer("\n", " ", "</p>", "\n", "<br>", "\n", "<br />", "\n")
@@ -207,6 +212,8 @@ func (c ContentSpec) getHTMLRenderer(defaultFlags int, ctx *RenderingContext) bl
 	renderParameters := blackfriday.HtmlRendererParameters{
 		FootnoteAnchorPrefix:       c.footnoteAnchorPrefix,
 		FootnoteReturnLinkContents: c.footnoteReturnLinkContents,
+		HeaderIDLinksLevel:         ctx.Config.HeaderIDLinksLevel,
+		HeaderIDLinksBeforeText:    ctx.Config.HeaderIDLinksBeforeText,
 	}
 
 	b := len(ctx.DocumentID) != 0
@@ -265,7 +272,8 @@ func getMarkdownExtensions(ctx *RenderingContext) int {
 		blackfriday.EXTENSION_SPACE_HEADERS |
 		blackfriday.EXTENSION_HEADER_IDS |
 		blackfriday.EXTENSION_BACKSLASH_LINE_BREAK |
-		blackfriday.EXTENSION_DEFINITION_LISTS
+		blackfriday.EXTENSION_DEFINITION_LISTS |
+		blackfriday.EXTENSION_INLINE_CODE_LANG
 
 	// Extra Blackfriday extensions that Hugo enables by default
 	flags := commonExtensions |
